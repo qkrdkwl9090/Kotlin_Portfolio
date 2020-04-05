@@ -9,6 +9,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.activity.viewModels
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -29,14 +32,12 @@ class MainActivity : AppCompatActivity() {
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
             adapter = MemoAdapter(
-                viewModel.data,
+                emptyList(),
                 onClickDeleteIcon = {
                     viewModel.deleteMemo(it)
-                    binding.recyclerView.adapter?.notifyDataSetChanged()
                 },
                 onClickItem = {
                     viewModel.toggleItem(it)
-                    binding.recyclerView.adapter?.notifyDataSetChanged()
                 }
             )
         }
@@ -45,8 +46,12 @@ class MainActivity : AppCompatActivity() {
             val memo = Memo(binding.editText.text.toString())
             viewModel.addMemo(memo)
             binding.editText.text = null
-            binding.recyclerView.adapter?.notifyDataSetChanged()
         }
+        //관찰 UI 업데이트
+        viewModel.memoLiveData.observe(this, Observer {
+            (binding.recyclerView.adapter as MemoAdapter).setData(it)
+
+        })
     }
 
 }
@@ -57,7 +62,7 @@ data class Memo(
 )
 
 class MemoAdapter(
-    private val myDataset: List<Memo>,
+    private var myDataset: List<Memo>,
     val onClickDeleteIcon: (memo: Memo) -> Unit,
     val onClickItem: (memo: Memo) -> Unit
 ) :
@@ -104,21 +109,29 @@ class MemoAdapter(
     }
 
     override fun getItemCount() = myDataset.size
+
+    fun setData(newData: List<Memo>){
+        myDataset = newData
+        notifyDataSetChanged()
+    }
 }
 
 class MainViewModel : ViewModel() {
-    var data = arrayListOf<Memo>()
+    val memoLiveData = MutableLiveData<List<Memo>>()
+    private var data = arrayListOf<Memo>()
     fun toggleItem(memo: Memo) {
         memo.isDone = !memo.isDone
+        memoLiveData.value = data
 
     }
 
     fun addMemo(memo: Memo) {
         data.add(memo)
+        memoLiveData.value = data
     }
 
     fun deleteMemo(memo: Memo) {
         data.remove(memo)
-
+        memoLiveData.value = data
     }
 }
