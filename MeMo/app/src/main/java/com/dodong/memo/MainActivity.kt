@@ -8,6 +8,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.activity.viewModels
+import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dodong.memo.databinding.ActivityMainBinding
@@ -16,7 +18,7 @@ import com.dodong.memo.databinding.ItemMemoBinding
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
-    private var data = arrayListOf<Memo>()
+    private val viewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,40 +26,29 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
 
-        binding.recyclerView.apply{
+        binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
-            adapter = MemoAdapter(data,
+            adapter = MemoAdapter(
+                viewModel.data,
                 onClickDeleteIcon = {
-                    deleteMemo(it)
+                    viewModel.deleteMemo(it)
+                    binding.recyclerView.adapter?.notifyDataSetChanged()
                 },
                 onClickItem = {
-                    toggleItem(it)
+                    viewModel.toggleItem(it)
+                    binding.recyclerView.adapter?.notifyDataSetChanged()
                 }
             )
         }
 
         binding.addButton.setOnClickListener {
-            addMemo()
+            val memo = Memo(binding.editText.text.toString())
+            viewModel.addMemo(memo)
+            binding.editText.text = null
+            binding.recyclerView.adapter?.notifyDataSetChanged()
         }
     }
 
-    private fun toggleItem(memo: Memo) {
-        memo.isDone = !memo.isDone
-        binding.recyclerView.adapter?.notifyDataSetChanged()
-
-    }
-
-    private fun addMemo() {
-        val memo = Memo(binding.editText.text.toString())
-        data.add(memo)
-        binding.recyclerView.adapter?.notifyDataSetChanged()
-    }
-
-    private fun deleteMemo(memo: Memo) {
-        data.remove(memo)
-        binding.recyclerView.adapter?.notifyDataSetChanged()
-
-    }
 }
 
 data class Memo(
@@ -89,12 +80,12 @@ class MemoAdapter(
     override fun onBindViewHolder(holder: MemoViewHolder, position: Int) {
         val memo = myDataset[position]
         holder.binding.memoText.text = memo.text
-        if(memo.isDone){
-            holder.binding.memoText.apply{
+        if (memo.isDone) {
+            holder.binding.memoText.apply {
                 paintFlags = paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
                 setTypeface(null, Typeface.ITALIC)
             }
-        }else {
+        } else {
             holder.binding.memoText.apply {
                 paintFlags = 0
                 setTypeface(null, Typeface.NORMAL)
@@ -115,3 +106,19 @@ class MemoAdapter(
     override fun getItemCount() = myDataset.size
 }
 
+class MainViewModel : ViewModel() {
+    var data = arrayListOf<Memo>()
+    fun toggleItem(memo: Memo) {
+        memo.isDone = !memo.isDone
+
+    }
+
+    fun addMemo(memo: Memo) {
+        data.add(memo)
+    }
+
+    fun deleteMemo(memo: Memo) {
+        data.remove(memo)
+
+    }
+}
