@@ -1,5 +1,7 @@
 package com.dodong.memo
 
+import android.graphics.Paint
+import android.graphics.Typeface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -21,22 +23,34 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.recyclerView.layoutManager = LinearLayoutManager(this)
-        binding.recyclerView.adapter = MemoAdapter(data,
-            onClickDeleteIcon = {
-                deleteMemo(it)
-            }
-        )
+
+        binding.recyclerView.apply{
+            layoutManager = LinearLayoutManager(this@MainActivity)
+            adapter = MemoAdapter(data,
+                onClickDeleteIcon = {
+                    deleteMemo(it)
+                },
+                onClickItem = {
+                    toggleItem(it)
+                }
+            )
+        }
 
         binding.addButton.setOnClickListener {
             addMemo()
-            binding.recyclerView.adapter?.notifyDataSetChanged()
         }
+    }
+
+    private fun toggleItem(memo: Memo) {
+        memo.isDone = !memo.isDone
+        binding.recyclerView.adapter?.notifyDataSetChanged()
+
     }
 
     private fun addMemo() {
         val memo = Memo(binding.editText.text.toString())
         data.add(memo)
+        binding.recyclerView.adapter?.notifyDataSetChanged()
     }
 
     private fun deleteMemo(memo: Memo) {
@@ -53,7 +67,8 @@ data class Memo(
 
 class MemoAdapter(
     private val myDataset: List<Memo>,
-    val onClickDeleteIcon: (memo: Memo) -> Unit
+    val onClickDeleteIcon: (memo: Memo) -> Unit,
+    val onClickItem: (memo: Memo) -> Unit
 ) :
     RecyclerView.Adapter<MemoAdapter.MemoViewHolder>() {
 
@@ -74,10 +89,27 @@ class MemoAdapter(
     override fun onBindViewHolder(holder: MemoViewHolder, position: Int) {
         val memo = myDataset[position]
         holder.binding.memoText.text = memo.text
+        if(memo.isDone){
+            holder.binding.memoText.apply{
+                paintFlags = paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+                setTypeface(null, Typeface.ITALIC)
+            }
+        }else {
+            holder.binding.memoText.apply {
+                paintFlags = 0
+                setTypeface(null, Typeface.NORMAL)
+            }
+        }
+
+
         holder.binding.deleteImageView.setOnClickListener {
             onClickDeleteIcon.invoke(memo)
+        }
+        holder.binding.root.setOnClickListener {
+            onClickItem.invoke(memo)
 
         }
+
     }
 
     override fun getItemCount() = myDataset.size
