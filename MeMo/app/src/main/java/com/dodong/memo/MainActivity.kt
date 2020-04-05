@@ -22,21 +22,39 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
-        binding.recyclerView.adapter = MemoAdapter(data)
+        binding.recyclerView.adapter = MemoAdapter(data,
+            onClickDeleteIcon = {
+                deleteMemo(it)
+            }
+        )
 
         binding.addButton.setOnClickListener {
             addMemo()
             binding.recyclerView.adapter?.notifyDataSetChanged()
         }
     }
-    private fun addMemo(){
+
+    private fun addMemo() {
         val memo = Memo(binding.editText.text.toString())
         data.add(memo)
     }
+
+    private fun deleteMemo(memo: Memo) {
+        data.remove(memo)
+        binding.recyclerView.adapter?.notifyDataSetChanged()
+
+    }
 }
 
-data class Memo(val text: String, var isDone: Boolean = false)
-class MemoAdapter(private val myDataset: List<Memo>) :
+data class Memo(
+    val text: String,
+    var isDone: Boolean = false
+)
+
+class MemoAdapter(
+    private val myDataset: List<Memo>,
+    val onClickDeleteIcon: (memo: Memo) -> Unit
+) :
     RecyclerView.Adapter<MemoAdapter.MemoViewHolder>() {
 
     class MemoViewHolder(val binding: ItemMemoBinding) : RecyclerView.ViewHolder(binding.root)
@@ -44,6 +62,7 @@ class MemoAdapter(private val myDataset: List<Memo>) :
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
+
     ): MemoAdapter.MemoViewHolder {
 
         val view = LayoutInflater.from(parent.context)
@@ -53,8 +72,12 @@ class MemoAdapter(private val myDataset: List<Memo>) :
 
 
     override fun onBindViewHolder(holder: MemoViewHolder, position: Int) {
+        val memo = myDataset[position]
+        holder.binding.memoText.text = memo.text
+        holder.binding.deleteImageView.setOnClickListener {
+            onClickDeleteIcon.invoke(memo)
 
-        holder.binding.memoText.text = myDataset[position].text
+        }
     }
 
     override fun getItemCount() = myDataset.size
