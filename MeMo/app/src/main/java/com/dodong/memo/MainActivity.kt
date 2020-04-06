@@ -20,6 +20,9 @@ import com.dodong.memo.databinding.ItemMemoBinding
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 
 class MainActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
@@ -34,7 +37,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         auth = FirebaseAuth.getInstance()
 
-        if(FirebaseAuth.getInstance().currentUser == null){
+        if (FirebaseAuth.getInstance().currentUser == null) {
             login()
         }
 
@@ -64,6 +67,7 @@ class MainActivity : AppCompatActivity() {
         })
 
     }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -71,7 +75,7 @@ class MainActivity : AppCompatActivity() {
             val response = IdpResponse.fromResultIntent(data)
 
             if (resultCode == Activity.RESULT_OK) {
-                val user = FirebaseAuth.getInstance().currentUser
+                viewModel.fetchData()
 
             } else {
                 //로그인 실패나 안했을 시
@@ -79,19 +83,22 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-    fun login(){
+
+    fun login() {
         val providers = arrayListOf(
-            AuthUI.IdpConfig.EmailBuilder().build())
+            AuthUI.IdpConfig.EmailBuilder().build()
+        )
 
         startActivityForResult(
             AuthUI.getInstance()
                 .createSignInIntentBuilder()
                 .setAvailableProviders(providers)
                 .build(),
-            RC_SIGN_IN)
+            RC_SIGN_IN
+        )
     }
 
-    fun logout(){
+    fun logout() {
         AuthUI.getInstance()
             .signOut(this)
             .addOnCompleteListener {
@@ -104,6 +111,7 @@ class MainActivity : AppCompatActivity() {
         inflater.inflate(R.menu.main, menu)
         return true
     }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // Handle item selection
         return when (item.itemId) {
@@ -172,15 +180,43 @@ class MemoAdapter(
 
     override fun getItemCount() = myDataset.size
 
-    fun setData(newData: List<Memo>){
+    fun setData(newData: List<Memo>) {
         myDataset = newData
         notifyDataSetChanged()
     }
 }
 
 class MainViewModel : ViewModel() {
+    val db = Firebase.firestore
     val memoLiveData = MutableLiveData<List<Memo>>()
     private var data = arrayListOf<Memo>()
+
+//    init {
+//        fetchData()
+//    }
+
+    fun fetchData(){
+        val user = FirebaseAuth.getInstance().currentUser
+        if(user != null) {
+            db.collection(user.uid)
+                .addSnapshotListener{value, e ->
+                    if (e != null) {
+                        return@addSnapshotListener
+                    }
+
+                    data.clear()
+                    for (document in value!!) {
+                        val memo = Memo(
+                            document.getString("text")!!,
+                            document.getBoolean("isDone")!!
+                        )
+                        data.add(memo)
+                    }
+                    memoLiveData.value = data
+                }
+
+        }
+    }
     fun toggleItem(memo: Memo) {
         memo.isDone = !memo.isDone
         memoLiveData.value = data
