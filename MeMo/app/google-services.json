@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "241236276684",
+    "firebase_url": "https://memo-list-8d07f.firebaseio.com",
+    "project_id": "memo-list-8d07f",
+    "storage_bucket": "memo-list-8d07f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:241236276684:android:bcd1ab05a7f8c4e6f6d969",
+        "android_client_info": {
+          "package_name": "com.dodong.memo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "241236276684-f98j8p0a47spjp7gsgtht249tj2fqe5l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA0vXxzYRpQVva2OPU8simT7kRRwYr95Dk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "241236276684-f98j8p0a47spjp7gsgtht249tj2fqe5l.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
