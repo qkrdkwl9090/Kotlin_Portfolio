@@ -1,12 +1,12 @@
 package com.dodong.memo
 
+import android.app.Activity
+import android.content.Intent
 import android.graphics.Paint
 import android.graphics.Typeface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.lifecycle.LiveData
@@ -18,9 +18,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.dodong.memo.databinding.ActivityMainBinding
 import com.dodong.memo.databinding.ItemMemoBinding
 import com.firebase.ui.auth.AuthUI
+import com.firebase.ui.auth.IdpResponse
+import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity() {
-
+    private lateinit var auth: FirebaseAuth
     val RC_SIGN_IN = 1000;
     private lateinit var binding: ActivityMainBinding
 
@@ -30,16 +32,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        auth = FirebaseAuth.getInstance()
 
-        val providers = arrayListOf(
-            AuthUI.IdpConfig.EmailBuilder().build())
+        if(FirebaseAuth.getInstance().currentUser == null){
+            login()
+        }
 
-        startActivityForResult(
-            AuthUI.getInstance()
-                .createSignInIntentBuilder()
-                .setAvailableProviders(providers)
-                .build(),
-            RC_SIGN_IN)
 
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
@@ -64,6 +62,58 @@ class MainActivity : AppCompatActivity() {
             (binding.recyclerView.adapter as MemoAdapter).setData(it)
 
         })
+
+    }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == RC_SIGN_IN) {
+            val response = IdpResponse.fromResultIntent(data)
+
+            if (resultCode == Activity.RESULT_OK) {
+                val user = FirebaseAuth.getInstance().currentUser
+
+            } else {
+                //로그인 실패나 안했을 시
+                finish()
+            }
+        }
+    }
+    fun login(){
+        val providers = arrayListOf(
+            AuthUI.IdpConfig.EmailBuilder().build())
+
+        startActivityForResult(
+            AuthUI.getInstance()
+                .createSignInIntentBuilder()
+                .setAvailableProviders(providers)
+                .build(),
+            RC_SIGN_IN)
+    }
+
+    fun logout(){
+        AuthUI.getInstance()
+            .signOut(this)
+            .addOnCompleteListener {
+                login()
+            }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val inflater: MenuInflater = menuInflater
+        inflater.inflate(R.menu.main, menu)
+        return true
+    }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle item selection
+        return when (item.itemId) {
+            R.id.action_log_out -> {
+                logout()
+                true
+            }
+
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
 }
