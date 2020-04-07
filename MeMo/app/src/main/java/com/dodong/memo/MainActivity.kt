@@ -20,7 +20,9 @@ import com.dodong.memo.databinding.ItemMemoBinding
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
@@ -132,9 +134,9 @@ data class Memo(
 )
 
 class MemoAdapter(
-    private var myDataset: List<Memo>,
-    val onClickDeleteIcon: (memo: Memo) -> Unit,
-    val onClickItem: (memo: Memo) -> Unit
+    private var myDataset: List<DocumentSnapshot>,
+    val onClickDeleteIcon: (memo: DocumentSnapshot) -> Unit,
+    val onClickItem: (memo: DocumentSnapshot) -> Unit
 ) :
     RecyclerView.Adapter<MemoAdapter.MemoViewHolder>() {
 
@@ -154,8 +156,8 @@ class MemoAdapter(
 
     override fun onBindViewHolder(holder: MemoViewHolder, position: Int) {
         val memo = myDataset[position]
-        holder.binding.memoText.text = memo.text
-        if (memo.isDone) {
+        holder.binding.memoText.text = memo.getString("text") ?: ""
+        if ((memo.getBoolean("isDone") ?: false) == true) {
             holder.binding.memoText.apply {
                 paintFlags = paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
                 setTypeface(null, Typeface.ITALIC)
@@ -173,14 +175,13 @@ class MemoAdapter(
         }
         holder.binding.root.setOnClickListener {
             onClickItem.invoke(memo)
-
         }
 
     }
 
     override fun getItemCount() = myDataset.size
 
-    fun setData(newData: List<Memo>) {
+    fun setData(newData: List<DocumentSnapshot>) {
         myDataset = newData
         notifyDataSetChanged()
     }
@@ -188,50 +189,45 @@ class MemoAdapter(
 
 class MainViewModel : ViewModel() {
     val db = Firebase.firestore
-    val memoLiveData = MutableLiveData<List<Memo>>()
-    private var data = arrayListOf<Memo>()
+    val memoLiveData = MutableLiveData<List<DocumentSnapshot>>()
 
-//    init {
-//        fetchData()
-//    }
+    init {
+        fetchData()
+    }
 
-    fun fetchData(){
+    fun fetchData() {
         val user = FirebaseAuth.getInstance().currentUser
-        if(user != null) {
+        if (user != null) {
             db.collection(user.uid)
-                .addSnapshotListener{value, e ->
+                .addSnapshotListener { value, e ->
                     if (e != null) {
                         return@addSnapshotListener
                     }
-
-                    data.clear()
-                    for (document in value!!) {
-                        val memo = Memo(
-                            document.getString("text") ?: "",
-                            document.getBoolean("isDone") ?: false
-                        )
-                        data.add(memo)
+                    if (value != null) {
+                        memoLiveData.value = value.documents
                     }
-                    memoLiveData.value = data
                 }
 
         }
     }
-    fun toggleItem(memo: Memo) {
-        memo.isDone = !memo.isDone
-        memoLiveData.value = data
+
+    fun toggleItem(memo: DocumentSnapshot) {
+        FirebaseAuth.getInstance().currentUser?.let {
+            val isDone = memo.getBoolean("isDone") ?: false
+            db.collection(it.uid).document(memo.id).update("isDone", !isDone)
+        }
 
     }
 
     fun addMemo(memo: Memo) {
-        FirebaseAuth.getInstance().currentUser?.let{
-            db.collection(it.uid)
-                .add(memo)
+        FirebaseAuth.getInstance().currentUser?.let {
+            db.collection(it.uid).add(memo)
         }
     }
 
-    fun deleteMemo(memo: Memo) {
-        data.remove(memo)
-        memoLiveData.value = data
+    fun deleteMemo(memo: DocumentSnapshot) {
+        FirebaseAuth.getInstance().currentUser?.let {
+            db.collection(it.uid).document(memo.id).delete()
+        }
     }
 }
