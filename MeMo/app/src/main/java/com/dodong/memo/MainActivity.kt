@@ -207,8 +207,8 @@ class MainViewModel : ViewModel() {
                     data.clear()
                     for (document in value!!) {
                         val memo = Memo(
-                            document.getString("text")!!,
-                            document.getBoolean("isDone")!!
+                            document.getString("text") ?: "",
+                            document.getBoolean("isDone") ?: false
                         )
                         data.add(memo)
                     }
@@ -224,8 +224,10 @@ class MainViewModel : ViewModel() {
     }
 
     fun addMemo(memo: Memo) {
-        data.add(memo)
-        memoLiveData.value = data
+        FirebaseAuth.getInstance().currentUser?.let{
+            db.collection(it.uid)
+                .add(memo)
+        }
     }
 
     fun deleteMemo(memo: Memo) {
