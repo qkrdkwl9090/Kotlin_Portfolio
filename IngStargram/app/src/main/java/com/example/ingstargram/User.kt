@@ -2,7 +2,7 @@ package com.example.ingstargram
 
 import java.io.Serializable
 
-class User(
+class (
     var username : String? = null,
     var token : String? = null
 ) :Serializable

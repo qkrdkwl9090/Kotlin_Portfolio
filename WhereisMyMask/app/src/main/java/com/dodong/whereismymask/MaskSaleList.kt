@@ -1,7 +1,6 @@
 package com.dodong.whereismymask
 
 import android.app.Activity
-import android.os.AsyncTask
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -21,7 +20,6 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import com.facebook.stetho.okhttp3.StethoInterceptor
-import org.jetbrains.anko.searchManager
 
 class MaskSaleList : AppCompatActivity() {
 
@@ -29,15 +27,16 @@ class MaskSaleList : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_mask_sale_list)
-        Stetho.initializeWithDefaults(this)
         createRetrofit(this@MaskSaleList)
+        Stetho.initializeWithDefaults(this)
         search.setOnClickListener {
 
             createRetrofit(this@MaskSaleList)
         }
     }
 
-    fun createRetrofit(activity: Activity){
+    fun createRetrofit(activity: Activity) {
+        Log.d("test1","에러다 에러1")
 
         val client = OkHttpClient.Builder()
             .addNetworkInterceptor(StethoInterceptor())
@@ -48,21 +47,23 @@ class MaskSaleList : AppCompatActivity() {
             .client(client)
             .build()
         val service = retrofit.create(RetrofitService::class.java)
+        Log.d("test1","에러다 에러2")
 
 
 
-
-        service.getStore().enqueue(object : Callback<ArrayList<StoreByAddressResponse>>{
-            override fun onFailure(call: Call<ArrayList<StoreByAddressResponse>>, t: Throwable) {
-                Toast.makeText(activity,"통신 실패",Toast.LENGTH_LONG).show()
+        service.getStore().enqueue(object : Callback<StoreByAddressResponse> {
+            override fun onFailure(call: Call<StoreByAddressResponse>, t: Throwable) {
+                Log.d("test1", t.toString())
+                Toast.makeText(activity, "통신 실패", Toast.LENGTH_LONG).show()
             }
 
             override fun onResponse(
-                call: Call<ArrayList<StoreByAddressResponse>>,
-                response: Response<ArrayList<StoreByAddressResponse>>
+                call: Call<StoreByAddressResponse>,
+                response: Response<StoreByAddressResponse>
             ) {
+                Log.d("test1","성공이다 성공")
                 if (response.isSuccessful) {
-                    val postList = response.body()
+                    val postList = response.body()?.stores
                     val adatper = PostAdatper(
                         postList!!,
                         LayoutInflater.from(this@MaskSaleList)
@@ -79,9 +80,9 @@ class MaskSaleList : AppCompatActivity() {
 
 
 class PostAdatper(
-    var postList : ArrayList<StoreByAddressResponse>,
+    var postList: List<StoreByAddressResponse.Store>,
     val inflater: LayoutInflater
-): RecyclerView.Adapter<PostAdatper.viewHolder>() {
+) : RecyclerView.Adapter<PostAdatper.viewHolder>() {
     inner class viewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val name: TextView
         val type: TextView
@@ -93,11 +94,12 @@ class PostAdatper(
             type = itemView.findViewById(R.id.type)
             stock = itemView.findViewById(R.id.stock)
             address = itemView.findViewById(R.id.address)
+            Log.d("test1","에러다 에러3")
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): viewHolder {
-        val view = inflater.inflate(R.layout.activity_mask_sale_list, parent, false)
+        val view = inflater.inflate(R.layout.itemview, parent, false)
         return viewHolder(view)
     }
 
@@ -106,9 +108,10 @@ class PostAdatper(
     }
 
     override fun onBindViewHolder(holder: viewHolder, position: Int) {
-        holder.name.setText(postList.get(position).address)
-        holder.type.setText(postList.get(position).address)
-//        holder.stock.setText(postList.get(position).)
-        holder.address.setText(postList.get(position).address)
+        var store : StoreByAddressResponse.Store = postList.get(position)
+        holder.name.setText(store.getname())
+        holder.type.setText(store.gettype())
+        holder.stock.setText(store.getstat())
+        holder.address.setText(store.getaddr())
     }
 }
