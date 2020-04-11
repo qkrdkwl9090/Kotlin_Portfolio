@@ -1,6 +1,7 @@
 package com.dodong.whereismymask
 
 import android.app.Activity
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -62,7 +63,8 @@ class MaskSaleList : AppCompatActivity() {
                     val postList = response.body()?.stores
                     val adatper = PostAdatper(
                         postList!!,
-                        LayoutInflater.from(this@MaskSaleList)
+                        LayoutInflater.from(this@MaskSaleList),
+                        this@MaskSaleList
                     )
                     recyclerview.adapter = adatper
                     recyclerview.layoutManager = LinearLayoutManager(this@MaskSaleList)
@@ -77,7 +79,8 @@ class MaskSaleList : AppCompatActivity() {
 
 class PostAdatper(
     var postList: List<StoreByAddressResponse.Store>,
-    val inflater: LayoutInflater
+    val inflater: LayoutInflater,
+    val activity: Activity
 ) : RecyclerView.Adapter<PostAdatper.viewHolder>() {
     inner class viewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val name: TextView
@@ -88,7 +91,18 @@ class PostAdatper(
             name = itemView.findViewById(R.id.name)
             stock = itemView.findViewById(R.id.stock)
             address = itemView.findViewById(R.id.address)
-            Log.d("test1","에러다 에러3")
+
+            itemView.setOnClickListener{
+
+                val postion: Int = adapterPosition
+                val intent = Intent(activity, MapsActivity::class.java)
+                intent.putExtra("map_name", postList.get(postion).getname()?:"")
+                intent.putExtra("map_lat", postList.get(postion).getlat())
+                intent.putExtra("map_lng", postList.get(postion).getlng())
+
+                Log.d("test1","송신"+postList.get(postion).getlat())
+                activity.startActivity(intent)
+            }
         }
     }
 
