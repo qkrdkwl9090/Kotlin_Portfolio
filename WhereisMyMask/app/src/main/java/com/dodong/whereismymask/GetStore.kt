@@ -33,6 +33,12 @@ class StoreByAddressResponse(
         fun getaddr(): String? {
             return addr
         }
+        fun getlat(): Int?{
+            return lat as Int
+        }
+        fun getlng(): Int?{
+            return lng as Int
+        }
     }
 
 

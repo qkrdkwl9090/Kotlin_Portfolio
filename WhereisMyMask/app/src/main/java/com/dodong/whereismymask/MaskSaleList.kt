@@ -29,10 +29,6 @@ class MaskSaleList : AppCompatActivity() {
         setContentView(R.layout.activity_mask_sale_list)
         createRetrofit(this@MaskSaleList)
         Stetho.initializeWithDefaults(this)
-        search.setOnClickListener {
-
-            createRetrofit(this@MaskSaleList)
-        }
     }
 
     fun createRetrofit(activity: Activity) {
@@ -85,13 +81,11 @@ class PostAdatper(
 ) : RecyclerView.Adapter<PostAdatper.viewHolder>() {
     inner class viewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val name: TextView
-        val type: TextView
         var stock: TextView
         val address: TextView
 
         init {
             name = itemView.findViewById(R.id.name)
-            type = itemView.findViewById(R.id.type)
             stock = itemView.findViewById(R.id.stock)
             address = itemView.findViewById(R.id.address)
             Log.d("test1","에러다 에러3")
@@ -110,7 +104,6 @@ class PostAdatper(
     override fun onBindViewHolder(holder: viewHolder, position: Int) {
         var store : StoreByAddressResponse.Store = postList.get(position)
         holder.name.setText(store.getname())
-        holder.type.setText(store.gettype())
         holder.stock.setText(store.getstat())
         holder.address.setText(store.getaddr())
     }
