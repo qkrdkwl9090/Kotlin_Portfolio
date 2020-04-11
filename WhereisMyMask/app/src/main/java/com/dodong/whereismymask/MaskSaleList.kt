@@ -2,6 +2,7 @@ package com.dodong.whereismymask
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -87,23 +88,25 @@ class PostAdatper(
 ) : RecyclerView.Adapter<PostAdatper.viewHolder>() {
     inner class viewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val name: TextView
-        var stock: TextView
+        val remain: TextView
+        val stock: TextView
         val address: TextView
 
         init {
             name = itemView.findViewById(R.id.name)
-            stock = itemView.findViewById(R.id.stock)
+            stock = itemView.findViewById(R.id.stockat)
             address = itemView.findViewById(R.id.address)
+            remain = itemView.findViewById(R.id.remain)
 
-            itemView.setOnClickListener{
+            itemView.setOnClickListener {
 
                 val postion: Int = adapterPosition
                 val intent = Intent(activity, MapsActivity::class.java)
-                intent.putExtra("map_name", postList.get(postion).getname()?:"")
+                intent.putExtra("map_name", postList.get(postion).getname() ?: "")
                 intent.putExtra("map_lat", postList.get(postion).getlat())
                 intent.putExtra("map_lng", postList.get(postion).getlng())
 
-                Log.d("test1","송신"+postList.get(postion).getlat())
+                Log.d("test1", "송신" + postList.get(postion).getlat())
                 activity.startActivity(intent)
             }
         }
@@ -119,9 +122,37 @@ class PostAdatper(
     }
 
     override fun onBindViewHolder(holder: viewHolder, position: Int) {
-        var store : StoreByAddressResponse.Store = postList.get(position)
+        var store: StoreByAddressResponse.Store = postList.get(position)
         holder.name.setText(store.getname())
-        holder.stock.setText(store.getstat())
+        holder.stock.setText("최근입고시간 : " + store.getstockAt())
+        fun getremainStat(position: Int): String {
+            var store: StoreByAddressResponse.Store = postList.get(position)
+            val stat = store.getremainStat()
+            if (stat == "plenty"){
+                holder.remain.setTextColor(Color.GREEN)
+                return "100개 이상"
+            }
+            else if (stat == "some"){
+                holder.remain.setTextColor(Color.YELLOW)
+                return "30개 이상 100개 미만"
+            }
+            else if (stat == "few"){
+                holder.remain.setTextColor(Color.RED)
+                return "2개 이상 30개 미만"
+            }
+            else if (stat == "empty"){
+                holder.remain.setTextColor(Color.GRAY)
+                return "1개 이하"
+            }
+            else if (stat == "break") return "판매중지"
+            else return "알수없음"
+        }
+        holder.remain.setText(getremainStat(position))
         holder.address.setText(store.getaddr())
     }
+
+
+
+
+
 }
