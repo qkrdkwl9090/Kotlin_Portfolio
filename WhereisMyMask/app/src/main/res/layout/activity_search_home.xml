@@ -26,6 +26,7 @@
         android:paddingRight="8dp">
 
         <EditText
+            android:id="@+id/addresssearch"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:layout_marginRight="8dp"

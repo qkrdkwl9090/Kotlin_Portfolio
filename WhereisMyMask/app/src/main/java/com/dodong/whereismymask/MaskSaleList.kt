@@ -48,7 +48,10 @@ class MaskSaleList : AppCompatActivity() {
 
 
 
-        service.getStore().enqueue(object : Callback<StoreByAddressResponse> {
+        val searchaddress = intent.getStringExtra("searchAddress")
+        Log.d("test1","받은 주소" +searchaddress)
+        service.getStore(searchaddress)
+            .enqueue(object : Callback<StoreByAddressResponse> {
             override fun onFailure(call: Call<StoreByAddressResponse>, t: Throwable) {
                 Log.d("test1", t.toString())
                 Toast.makeText(activity, "통신 실패", Toast.LENGTH_LONG).show()
