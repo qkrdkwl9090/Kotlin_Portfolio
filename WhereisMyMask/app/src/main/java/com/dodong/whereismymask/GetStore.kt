@@ -19,31 +19,26 @@ class StoreByAddressResponse(
         @SerializedName("remain_stat") var remainStat: String? = null,
         @SerializedName("created_at") var createedAt: String? = null
     ) : Serializable {
-        fun getstockAt(): String? {
-            val stockat =stockAt ?: "알수없음"
-            return stockAt
+        fun getstockAt(): String {
+            return stockAt ?: "알수없음"
         }
-
-        fun getremainStat(): String? {
-
-            return remainStat
+        fun getremainStat(): String {
+            return remainStat ?: "알수없음"
         }
-
-
-        fun getname(): String? {
-            return name
+        fun getname(): String {
+            return name ?: "알수없음"
         }
 
         fun getaddr(): String? {
-            return addr
+            return addr ?: "알수없음"
         }
 
-        fun getlat(): Double? {
-            return lat
+        fun getlat(): Double {
+            return lat ?: "0.0".toDouble()
         }
 
-        fun getlng(): Double? {
-            return lng
+        fun getlng(): Double {
+            return lng ?: "0.0".toDouble()
         }
     }
 

@@ -35,14 +35,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         Log.d("test1","이름" + name)
         val lat: Double = intent.getDoubleExtra("map_lat",0.0)
 
-        Log.d("test1","이름" + lat)
+        Log.d("test1","lat :" + lat)
         val lng: Double = intent.getDoubleExtra("map_lng",0.0)
 
-        Log.d("test1","이름" + lng)
+        Log.d("test1","lng :" + lng)
         val maskStore = LatLng(lat, lng)
-        mMap.addMarker(MarkerOptions().position(maskStore).title(name))
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(maskStore))
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(maskStore,17f))
+        mMap.addMarker(MarkerOptions().position(maskStore).title(name))//지도에 마커 생성
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(maskStore,17f)) //지도  이동, 확대
     }
 
 }

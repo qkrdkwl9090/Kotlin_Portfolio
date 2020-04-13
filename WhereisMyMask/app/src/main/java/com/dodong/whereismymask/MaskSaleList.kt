@@ -34,8 +34,6 @@ class MaskSaleList : AppCompatActivity() {
     }
 
     fun createRetrofit(activity: Activity) {
-        Log.d("test1","에러다 에러1")
-
         val client = OkHttpClient.Builder()
             .addNetworkInterceptor(StethoInterceptor())
             .build()
@@ -45,7 +43,7 @@ class MaskSaleList : AppCompatActivity() {
             .client(client)
             .build()
         val service = retrofit.create(RetrofitService::class.java)
-        Log.d("test1","에러다 에러2")
+        Log.d("test1","retrofit생성")
 
 
 
@@ -62,7 +60,7 @@ class MaskSaleList : AppCompatActivity() {
                 call: Call<StoreByAddressResponse>,
                 response: Response<StoreByAddressResponse>
             ) {
-                Log.d("test1","성공이다 성공")
+                Log.d("test1","응답 성공")
                 if (response.isSuccessful) {
                     val postList = response.body()?.stores
                     val adatper = PostAdatper(
@@ -102,11 +100,11 @@ class PostAdatper(
 
                 val postion: Int = adapterPosition
                 val intent = Intent(activity, MapsActivity::class.java)
-                intent.putExtra("map_name", postList.get(postion).getname() ?: "")
+                intent.putExtra("map_name", postList.get(postion).getname())
                 intent.putExtra("map_lat", postList.get(postion).getlat())
                 intent.putExtra("map_lng", postList.get(postion).getlng())
 
-                Log.d("test1", "송신" + postList.get(postion).getlat())
+                Log.d("test1", "송신 lat값 : " + postList.get(postion).getlat())
                 activity.startActivity(intent)
             }
         }

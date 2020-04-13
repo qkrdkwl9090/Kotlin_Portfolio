@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
@@ -26,7 +27,7 @@ class ITubeActivity : AppCompatActivity() {
         (application as MasterApplication).service.getITubeList()
             .enqueue(object : Callback<ArrayList<ITube>>{
                 override fun onFailure(call: Call<ArrayList<ITube>>, t: Throwable) {
-                    TODO("Not yet implemented")
+                    Toast.makeText(this@ITubeActivity,"통신 실패",Toast.LENGTH_LONG)
                 }
 
                 override fun onResponse(
