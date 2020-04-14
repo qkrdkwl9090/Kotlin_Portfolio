@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.stetho.Stetho
@@ -148,9 +149,4 @@ class PostAdatper(
         holder.remain.setText(getremainStat(position))
         holder.address.setText(store.getaddr())
     }
-
-
-
-
-
 }
