@@ -17,8 +17,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        view_tab.addTab(view_tab.newTab().setText("one"))
-        view_tab.addTab(view_tab.newTab().setText("Two"))
+        view_tab.addTab(view_tab.newTab().setText("일기장"))
+        view_tab.addTab(view_tab.newTab().setText("일기작성"))
 
 
         val adapter = TabAdapter(LayoutInflater.from(this@MainActivity))
@@ -51,6 +51,7 @@ class TabAdapter(
                 container.addView(view)
                 return view
             }
+
             else -> {
                 val view = layoutInflater.inflate(R.layout.fragment1, container, false)
                 container.addView(view)
@@ -75,6 +76,6 @@ class TabAdapter(
     }
 
     override fun getCount(): Int {//pager 갯수
-        return 3
+        return 2
     }
 }
