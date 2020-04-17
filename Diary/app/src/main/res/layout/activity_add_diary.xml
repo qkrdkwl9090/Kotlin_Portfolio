@@ -13,26 +13,31 @@
         android:layout_height="0dp"
         android:layout_weight="14"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="32dp">
 
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="10"
+            android:gravity="center"
+            android:hint="[예시]\n오늘은..."
+            android:inputType="textMultiLine"
+            android:textColor="#ffffff"
+            android:background="@drawable/bolder"
+            android:textColorHint="#4Dffffff"
+            android:textSize="15dp" />
         <TextView
-
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="2020.04.04"
             android:textColor="#ffffff"
             android:textSize="20dp"
+            android:gravity="right"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="32dp"
             android:textStyle="italic"/>
 
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:hint="오늘은..."
-            android:inputType="textMultiLine"
-            android:textColor="#ffffff"
-            android:textColorHint="#4Dffffff"
-            android:textSize="15dp" />
     </LinearLayout>
 
     <LinearLayout
