@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1050073667232",
+    "firebase_url": "https://diary-86345.firebaseio.com",
+    "project_id": "diary-86345",
+    "storage_bucket": "diary-86345.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1050073667232:android:8c9f118a6708d5dba19bc5",
+        "android_client_info": {
+          "package_name": "com.dodong.diary"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1050073667232-df477dsr1mhtue69k2ioqjc0gbhoginp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDSsh3fLLoYf_XBX1cyuljUgwKqIr9p3oU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1050073667232-df477dsr1mhtue69k2ioqjc0gbhoginp.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1050073667232-ehj578441rldnvbj0dlbfa5rnea7b8l2.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.dodong.Diary"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

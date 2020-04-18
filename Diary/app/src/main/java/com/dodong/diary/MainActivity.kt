@@ -2,20 +2,30 @@ package com.dodong.diary
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.viewpager.widget.PagerAdapter
+import com.firebase.ui.auth.AuthUI
 import com.google.android.material.tabs.TabLayout
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var auth: FirebaseAuth
+    val RC_SIGN_IN = 1000;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        val auth = FirebaseAuth.getInstance()
+        if (FirebaseAuth.getInstance().currentUser == null) {
+            login()
+        }
 
         view_tab.addTab(view_tab.newTab().setText("일기장"))
         view_tab.addTab(view_tab.newTab().setText("일기작성"))
@@ -33,7 +43,23 @@ class MainActivity : AppCompatActivity() {
             }
         })
         view_pager.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(view_tab))
+
+
     }
+    fun login(){
+        val providers = arrayListOf(
+            AuthUI.IdpConfig.EmailBuilder().build(),
+            AuthUI.IdpConfig.GoogleBuilder().build())
+
+        startActivityForResult(
+            AuthUI.getInstance()
+                .createSignInIntentBuilder()
+                .setAvailableProviders(providers)
+                .build(),
+            RC_SIGN_IN)
+    }
+
+
 }
 
 class TabAdapter(
