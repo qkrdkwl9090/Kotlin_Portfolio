@@ -10,6 +10,9 @@ import android.view.ViewGroup
 import android.widget.GridLayout
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.GridLayoutManager
@@ -44,7 +47,7 @@ class MainActivity : AppCompatActivity() {
     val RC_SIGN_IN = 1000
 //
     private lateinit var binding: ActivityMainBinding // 바인딩
-    private lateinit var fragment1Binding: Fragment1Binding
+
 
     private val data = arrayListOf<Diary>()
 
@@ -54,11 +57,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)//바인딩 부분분
-        fragment1Binding = Fragment1Binding.inflate(layoutInflater)
         val view = binding.root
-        val fragmentView = fragment1Binding.root
         setContentView(view)
-        setContentView(fragmentView)
 
         data.add(Diary("dfsfsf","1213-1-1"))
         data.add(Diary("dfsfs2f","1213-5-1"))
@@ -74,7 +74,8 @@ class MainActivity : AppCompatActivity() {
         binding.viewTab.view_tab.addTab(view_tab.newTab().setText("일기작성"))
 
 
-        val adapter = TabAdapter(LayoutInflater.from(this@MainActivity))
+        val adapter = TabAdapter(supportFragmentManager, 2)
+
         view_pager.adapter = adapter
         view_tab.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabReselected(tab: TabLayout.Tab) {//탭이 클릭됬을 때
@@ -121,41 +122,19 @@ class MainActivity : AppCompatActivity() {
 }
 
 class TabAdapter(
-    val layoutInflater: LayoutInflater
-) : PagerAdapter() {
-    override fun instantiateItem(container: ViewGroup, position: Int): Any {//실질적으로 뷰를 그림
-        when (position) {
-            0 -> {
-                val view = layoutInflater.inflate(R.layout.fragment1, container, false)
-                container.addView(view)
-                return view
+    fragmentManager: FragmentManager,
+    val tabCount: Int
+) : FragmentStatePagerAdapter(fragmentManager) {
+    override fun getItem(position: Int): Fragment {
+        when (position){
+            0->{
+                return Fragment1()
             }
-            1 -> {
-                val view = layoutInflater.inflate(R.layout.fragment2, container, false)
-                container.addView(view)
-                return view
+            1->{
+                return Fragment2()
             }
-
-            else -> {
-                val view = layoutInflater.inflate(R.layout.fragment1, container, false)
-                container.addView(view)
-                return view
-            }
+            else -> return Fragment1()
         }
-    }
-    override fun destroyItem(
-        container: ViewGroup,
-        position: Int,
-        `object`: Any
-    ) {//뷰가 가려질때 내부적으로 파기되야할때 필요한 함수
-        container.removeView(`object` as View)
-    }
-
-    override fun isViewFromObject(
-        view: View,
-        `object`: Any
-    ): Boolean {//화면에 나오는게 내가 만든게 맞는지 확인//===는 더 정확한 비교(주소값까지 비교)
-        return view === `object` as View
     }
 
     override fun getCount(): Int {//pager 갯수
@@ -166,11 +145,12 @@ class TabAdapter(
 
 
 
-
 class Diary(
     val content: String,
     val date : String
-)
+){
+
+}
 
 class MyAdapter(private val myDataset: List<Diary>) :
     RecyclerView.Adapter<MyAdapter.MyViewHolder>() {
