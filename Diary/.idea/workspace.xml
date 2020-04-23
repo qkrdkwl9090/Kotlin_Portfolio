@@ -14,7 +14,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="246f19de-3a17-409b-8d8f-3fac05c70a28" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/dodong/diary/fragment2.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/dodong/diary/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/dodong/diary/MainActivity.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/dodong/diary/fragment1.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/dodong/diary/fragment1.kt" afterDir="false" />
@@ -54,7 +53,7 @@
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="PropertiesComponent">
     <property name="android.sdk.path" value="$USER_HOME$/AppData/Local/Android/Sdk" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/app/src/main/java/com/dodong/diary" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../Portfolio/reminding_app-master" />
     <property name="project.structure.last.edited" value="Build Variants" />
     <property name="project.structure.proportion" value="0.17" />
     <property name="project.structure.side.proportion" value="0.2" />
@@ -63,8 +62,9 @@
     <option name="LAST_EDITED_BUILD_TYPE" value="release" />
   </component>
   <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\AppDev\Kotlin_Portfolio\Diary\app\src\main\res\layout" />
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\AppDev\Kotlin_Portfolio\Diary\app" />
+      <recent name="C:\AppDev\Kotlin_Portfolio\Diary" />
     </key>
     <key name="CopyKotlinDeclarationDialog.RECENTS_KEY">
       <recent name="com.dodong.diary" />
@@ -72,9 +72,9 @@
     <key name="android.template.packageName">
       <recent name="com.dodong.diary" />
     </key>
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\AppDev\Kotlin_Portfolio\Diary\app" />
-      <recent name="C:\AppDev\Kotlin_Portfolio\Diary" />
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\AppDev\Kotlin_Portfolio\Diary\app\src\main\java\com\dodong\diary" />
+      <recent name="C:\AppDev\Kotlin_Portfolio\Diary\app\src\main\res\layout" />
     </key>
   </component>
   <component name="RunDashboard">

@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding // 바인딩
 
 
-    private val data = arrayListOf<Diary>()
+
 
 //    private val viewModel: MainViewModel by viewModels()
 
@@ -59,10 +59,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)//바인딩 부분분
         val view = binding.root
         setContentView(view)
-
-        data.add(Diary("dfsfsf","1213-1-1"))
-        data.add(Diary("dfsfs2f","1213-5-1"))
-        data.add(Diary("dfsf3sf","1213-6-1"))
 
 
         val auth = FirebaseAuth.getInstance()
@@ -99,8 +95,7 @@ class MainActivity : AppCompatActivity() {
 //            val diary = Diary(content, date()
 //            viewModel.addDiary(diary)
 //        }
-        fragment1Binding.recyclerView.layoutManager = GridLayoutManager(this,2)
-        fragment1Binding.recyclerView.adapter = MyAdapter(data)
+
 
 
 
@@ -152,27 +147,6 @@ class Diary(
 
 }
 
-class MyAdapter(private val myDataset: List<Diary>) :
-    RecyclerView.Adapter<MyAdapter.MyViewHolder>() {
-
-
-    class MyViewHolder(val binding: ItemviewBinding) : RecyclerView.ViewHolder(binding.root)
-
-    override fun onCreateViewHolder(parent: ViewGroup,
-                                    viewType: Int): MyAdapter.MyViewHolder {
-
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.itemview, parent, false) as TextView
-        return MyViewHolder(ItemviewBinding.bind(view))
-    }
-
-    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.binding.itemviewDate.text = myDataset[position].date
-    }
-
-
-    override fun getItemCount() = myDataset.size
-}
 //
 //class MainViewModel : ViewModel() {
 //    val db = Firebase.firestore
