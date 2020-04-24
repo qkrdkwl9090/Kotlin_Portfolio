@@ -18,6 +18,7 @@ import retrofit2.converter.simplexml.SimpleXmlConverterFactory
 class MainActivity : AppCompatActivity() {
     var TO_GRID = 0
     var TO_GPS = 1
+    private var gpsTracker : GpsTracker? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,6 +64,12 @@ class MainActivity : AppCompatActivity() {
 
         })
     }
+
+
+
+
+
+
     private fun convertGRID_GPS(
         mode: Int,
         lat_X: Double,
