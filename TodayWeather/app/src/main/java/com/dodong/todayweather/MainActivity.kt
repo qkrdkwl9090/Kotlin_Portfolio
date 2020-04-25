@@ -14,11 +14,11 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.simplexml.SimpleXmlConverterFactory
 
-
 class MainActivity : AppCompatActivity() {
     var TO_GRID = 0
     var TO_GPS = 1
-    private var gpsTracker : GpsTracker? = null
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,7 +33,11 @@ class MainActivity : AppCompatActivity() {
         Log.e("test1", "x = " + tmp3!!.x + ", y = " + tmp3!!.y)
         getData(this)
         Stetho.initializeWithDefaults(this)
+
+
     }
+
+
 
     fun getData(activity: Activity) {
         val client = OkHttpClient.Builder()
@@ -64,6 +68,7 @@ class MainActivity : AppCompatActivity() {
 
         })
     }
+
 
 
 
@@ -149,5 +154,7 @@ class MainActivity : AppCompatActivity() {
         var x = 0.0
         var y = 0.0
     }
+
+
 
 }
