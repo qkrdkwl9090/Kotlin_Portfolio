@@ -7,19 +7,22 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.location.Address
 import android.location.Geocoder
 import android.location.LocationManager
-import androidx.annotation.NonNull
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.RecyclerView
 import com.facebook.stetho.Stetho
 import com.facebook.stetho.okhttp3.StethoInterceptor
 import okhttp3.OkHttpClient
@@ -34,7 +37,8 @@ import java.util.*
 
 class MainActivity : AppCompatActivity() {
     var TO_GRID = 0
-    var TO_GPS = 1
+    var latitude : Double = 0.0
+    var longitude : Double = 0.0
     private var gpsTracker: GpsTracker? = null
 
     private val GPS_ENABLE_REQUEST_CODE = 2001
@@ -68,8 +72,8 @@ class MainActivity : AppCompatActivity() {
         ShowLocationButton.setOnClickListener {
 
             gpsTracker = GpsTracker(this@MainActivity)
-            val latitude = gpsTracker!!.latitude
-            val longitude = gpsTracker!!.longitude
+            latitude = gpsTracker!!.latitude
+            longitude = gpsTracker!!.longitude
             val address: String? = getCurrentAddress(latitude, longitude)
 
             var simpleAddress : List<String> = address!!.split(" ")
@@ -372,4 +376,27 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+}
+
+class MyAdapter(private val myDataset: Array<String>) :
+    RecyclerView.Adapter<MyAdapter.MyViewHolder>() {
+
+    class MyViewHolder(val textView: TextView) : RecyclerView.ViewHolder(textView)
+
+    override fun onCreateViewHolder(parent: ViewGroup,
+                                    viewType: Int): MyAdapter.MyViewHolder {
+        val textView = LayoutInflater.from(parent.context)
+            .inflate(R.layout.timeitemview, parent, false) as TextView
+        return MyViewHolder(textView)
+    }
+
+    // Replace the contents of a view (invoked by the layout manager)
+    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+        // - get element from your dataset at this position
+        // - replace the contents of the view with that element
+        holder.textView.text = myDataset[position]
+    }
+
+    // Return the size of your dataset (invoked by the layout manager)
+    override fun getItemCount() = myDataset.size
 }

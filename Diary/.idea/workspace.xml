@@ -14,9 +14,40 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="246f19de-3a17-409b-8d8f-3fac05c70a28" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/../TodayWeather/app/src/main/res/drawable-v24/cloudy.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../TodayWeather/app/src/main/res/drawable-v24/night.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../TodayWeather/app/src/main/res/drawable-v24/rain.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../TodayWeather/app/src/main/res/drawable-v24/rain1.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../TodayWeather/app/src/main/res/drawable-v24/rain2.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../TodayWeather/app/src/main/res/drawable-v24/snowflake.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../TodayWeather/app/src/main/res/drawable-v24/snowing.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../TodayWeather/app/src/main/res/drawable-v24/snowing1.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../TodayWeather/app/src/main/res/drawable-v24/snowing2.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../TodayWeather/app/src/main/res/drawable-v24/snowing3.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../TodayWeather/app/src/main/res/drawable-v24/storm.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../TodayWeather/app/src/main/res/drawable-v24/summer.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../TodayWeather/app/src/main/res/drawable-v24/sun.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../TodayWeather/app/src/main/res/drawable-v24/tornado.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../TodayWeather/app/src/main/res/drawable-v24/winter.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../TodayWeather/app/src/main/res/layout/timeitemview.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/dodong/diary/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/dodong/diary/MainActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/dodong/diary/fragment1.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/dodong/diary/fragment1.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TodayWeather/app/src/main/java/com/dodong/todayweather/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../TodayWeather/app/src/main/java/com/dodong/todayweather/MainActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TodayWeather/app/src/main/res/drawable/night1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TodayWeather/app/src/main/res/drawable/rain.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TodayWeather/app/src/main/res/drawable/rain1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TodayWeather/app/src/main/res/drawable/rain2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TodayWeather/app/src/main/res/drawable/snowflake.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TodayWeather/app/src/main/res/drawable/snowing.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TodayWeather/app/src/main/res/drawable/snowing1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TodayWeather/app/src/main/res/drawable/snowing2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TodayWeather/app/src/main/res/drawable/snowing3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TodayWeather/app/src/main/res/drawable/storm.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TodayWeather/app/src/main/res/drawable/summer.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TodayWeather/app/src/main/res/drawable/sun.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TodayWeather/app/src/main/res/drawable/sunrise.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TodayWeather/app/src/main/res/drawable/sunset.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TodayWeather/app/src/main/res/drawable/tornado.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TodayWeather/app/src/main/res/drawable/winter.png" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -53,7 +84,7 @@
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="PropertiesComponent">
     <property name="android.sdk.path" value="$USER_HOME$/AppData/Local/Android/Sdk" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../Portfolio/reminding_app-master" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../MeMo" />
     <property name="project.structure.last.edited" value="Build Variants" />
     <property name="project.structure.proportion" value="0.17" />
     <property name="project.structure.side.proportion" value="0.2" />
