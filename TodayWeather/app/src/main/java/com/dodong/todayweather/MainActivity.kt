@@ -7,15 +7,14 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.location.Address
 import android.location.Geocoder
 import android.location.LocationManager
+import android.os.AsyncTask
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
@@ -26,19 +25,24 @@ import androidx.recyclerview.widget.RecyclerView
 import com.facebook.stetho.Stetho
 import com.facebook.stetho.okhttp3.StethoInterceptor
 import okhttp3.OkHttpClient
+import okhttp3.Request
+import org.xmlpull.v1.XmlPullParser
+import org.xmlpull.v1.XmlPullParserFactory
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.simplexml.SimpleXmlConverterFactory
 import java.io.IOException
+import java.io.StringReader
+import java.net.URL
 import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
     var TO_GRID = 0
-    var latitude : Double = 0.0
-    var longitude : Double = 0.0
+    var latitude: Double = 0.0
+    var longitude: Double = 0.0
     private var gpsTracker: GpsTracker? = null
 
     private val GPS_ENABLE_REQUEST_CODE = 2001
@@ -76,9 +80,13 @@ class MainActivity : AppCompatActivity() {
             longitude = gpsTracker!!.longitude
             val address: String? = getCurrentAddress(latitude, longitude)
 
-            var simpleAddress : List<String> = address!!.split(" ")
-            textview_address.text = simpleAddress[0] + " "+ simpleAddress[1] + " "+ simpleAddress[2]
-            Log.d("test", "address : " + simpleAddress[0] + " "+ simpleAddress[1] + " "+ simpleAddress[2])
+            var simpleAddress: List<String> = address!!.split(" ")
+            textview_address.text =
+                simpleAddress[0] + " " + simpleAddress[1] + " " + simpleAddress[2]
+            Log.d(
+                "test",
+                "address : " + simpleAddress[0] + " " + simpleAddress[1] + " " + simpleAddress[2]
+            )
             Toast.makeText(
                 this@MainActivity,
                 "현재위치 \n위도 $latitude\n경도 $longitude",
@@ -383,8 +391,10 @@ class MyAdapter(private val myDataset: Array<String>) :
 
     class MyViewHolder(val textView: TextView) : RecyclerView.ViewHolder(textView)
 
-    override fun onCreateViewHolder(parent: ViewGroup,
-                                    viewType: Int): MyAdapter.MyViewHolder {
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): MyAdapter.MyViewHolder {
         val textView = LayoutInflater.from(parent.context)
             .inflate(R.layout.timeitemview, parent, false) as TextView
         return MyViewHolder(textView)
@@ -399,4 +409,188 @@ class MyAdapter(private val myDataset: Array<String>) :
 
     // Return the size of your dataset (invoked by the layout manager)
     override fun getItemCount() = myDataset.size
+}
+
+class ReceiveShortWeather : AsyncTask<URL, Integer, Long> {
+
+    val shortWeathers = ArrayList<ShortWeather>()
+
+    fun doInBackground(vararg urls: URL?): Long? {
+        val url = "http://www.kma.go.kr/wid/queryDFSRSS.jsp?zone=1159068000"
+        val client = OkHttpClient()
+        val request: Request = Request.Builder()
+            .url(url)
+            .build()
+        var response: Response = null
+        try {
+            response = client.newCall(request).execute()
+            parseXML(response.body().string())
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return null
+    }
+
+
+    fun parseXML(xml: String?) {
+        try {
+            var tagName = ""
+            var onHour = false
+            var onDay = false
+            var onTem = false
+            var onWfKor = false
+            var onPop = false
+            var onEnd = false
+            var isItemTag1 = false
+            var i = 0
+            val factory =
+                XmlPullParserFactory.newInstance()
+            val parser = factory.newPullParser()
+            parser.setInput(StringReader(xml))
+            var eventType = parser.eventType
+            while (eventType != XmlPullParser.END_DOCUMENT) {
+                if (eventType == XmlPullParser.START_TAG) {
+                    tagName = parser.name
+                    if (tagName == "data") {
+                        shortWeathers.add(ShortWeather())
+                        onEnd = false
+                        isItemTag1 = true
+                    }
+                } else if (eventType == XmlPullParser.TEXT && isItemTag1) {
+                    if (tagName == "hour" && !onHour) {
+                        shortWeathers[i].hour = (parser.text)
+                        onHour = true
+                    }
+                    if (tagName == "day" && !onDay) {
+                        shortWeathers[i].day = (parser.text)
+                        onDay = true
+                    }
+                    if (tagName == "temp" && !onTem) {
+                        shortWeathers[i].temp = (parser.text)
+                        onTem = true
+                    }
+                    if (tagName == "wfKor" && !onWfKor) {
+                        shortWeathers[i].wfKor = (parser.text)
+                        onWfKor = true
+                    }
+                    if (tagName == "pop" && !onPop) {
+                        shortWeathers[i].pop = (parser.text)
+                        onPop = true
+                    }
+                } else if (eventType == XmlPullParser.END_TAG) {
+                    if (tagName == "s06" && onEnd == false) {
+                        i++
+                        onHour = false
+                        onDay = false
+                        onTem = false
+                        onWfKor = false
+                        onPop = false
+                        isItemTag1 = false
+                        onEnd = true
+                    }
+                }
+                eventType = parser.next()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+}
+
+class LongWeatherActivity : AppCompatActivity() {
+    var textView_longWeather: TextView? = null
+    ReceiveLongWeather().execute()
+
+
+    inner class ReceiveLongWeather : AsyncTask<URL?, Int?, Long?>() {
+        var longWeathers = ArrayList<LongWeather>()
+        protected override fun doInBackground(vararg urls: URL): Long? {
+            val url =
+                "http://www.kma.go.kr/weather/forecast/mid-term-rss3.jsp?stnId=109"
+            val client = OkHttpClient()
+            val request: Request = Request.Builder()
+                .url(url)
+                .build()
+            var response: Response? = null
+            try {
+                response = client.newCall(request).execute()
+                parseWeekXML(response.body().string())
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
+            }
+            return null
+        }
+
+
+        fun parseWeekXML(xml: String?) {
+            try {
+                var tagName = ""
+                var onCity = false
+                var onTmEf = false
+                var onWf = false
+                var onTmn = false
+                var onTmx = false
+                var onEnd = false
+                var isItemTag1 = false
+                var i = 0
+                val factory =
+                    XmlPullParserFactory.newInstance()
+                val parser = factory.newPullParser()
+                parser.setInput(StringReader(xml))
+                var eventType = parser.eventType
+                while (eventType != XmlPullParser.END_DOCUMENT) {
+                    if (eventType == XmlPullParser.START_TAG) {
+                        tagName = parser.name
+                        if (tagName == "city") {
+                            eventType = parser.next()
+                            onCity = if (parser.text == "서울") {    // 파싱하고 싶은 지역 이름을 쓴다
+                                true
+                            } else {
+                                if (onCity) { // 이미 parsing을 끝냈을 경우
+                                    break
+                                } else {        // 아직 parsing을 못했을 경우
+                                    false
+                                }
+                            }
+                        }
+                        if (tagName == "data" && onCity) {
+                            longWeathers.add(LongWeather())
+                            onEnd = false
+                            isItemTag1 = true
+                        }
+                    } else if (eventType == XmlPullParser.TEXT && isItemTag1 && onCity) {
+                        if (tagName == "tmEf" && !onTmEf) {
+                            longWeathers[i].tmEf = (parser.text)
+                            onTmEf = true
+                        }
+                        if (tagName == "wf" && !onWf) {
+                            longWeathers[i].wf = (parser.text)
+                            onWf = true
+                        }
+                        if (tagName == "tmn" && !onTmn) {
+                            longWeathers[i].tmn = (parser.text)
+                            onTmn = true
+                        }
+                        if (tagName == "tmx" && !onTmx) {
+                            longWeathers[i].tmx = (parser.text)
+                            onTmx = true
+                        }
+                    } else if (eventType == XmlPullParser.END_TAG) {
+                        if (tagName == "reliability" && onEnd == false) {
+                            i++
+                            onTmEf = false
+                            onWf = false
+                            onTmn = false
+                            onTmx = false
+                            isItemTag1 = false
+                            onEnd = true
+                        }
+                    }
+                    eventType = parser.next()
+                }
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
 }
