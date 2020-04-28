@@ -9,6 +9,6 @@ class ShortWeather {
     var wfKor: String? = null// 상태
     var pop: String? = null // 강수확률
     var reh: String? = null// 습도
-    var tmx: String? = null
-    var tmn: String? = null
+    var tmx: String? = null//일최고기온
+    var tmn: String? = null//일최저기온
 }

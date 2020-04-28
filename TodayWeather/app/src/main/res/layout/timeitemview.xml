@@ -19,7 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_marginTop="16dp"
-        android:src="@drawable/rain" />
+        android:src="@drawable/rain2" />
 
     <TextView
         android:id="@+id/timeitem_rainper"

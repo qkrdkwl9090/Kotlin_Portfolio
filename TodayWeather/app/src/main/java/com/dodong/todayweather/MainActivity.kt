@@ -90,10 +90,8 @@ class MainActivity : AppCompatActivity() {
                 "현재위치 \n위도 $latitude\n경도 $longitude",
                 Toast.LENGTH_LONG
             ).show()
-
         }
     }
-
 
     fun getData() {
         val client = OkHttpClient.Builder()
