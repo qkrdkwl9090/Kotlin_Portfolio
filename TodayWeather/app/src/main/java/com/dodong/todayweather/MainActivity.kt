@@ -10,32 +10,29 @@ import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
 import android.location.LocationManager
-import android.os.AsyncTask
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.stetho.Stetho
 import com.facebook.stetho.okhttp3.StethoInterceptor
+import kotlinx.android.synthetic.main.activity_main.*
 import okhttp3.OkHttpClient
-import okhttp3.Request
-import org.xmlpull.v1.XmlPullParser
-import org.xmlpull.v1.XmlPullParserFactory
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.simplexml.SimpleXmlConverterFactory
 import java.io.IOException
-import java.io.StringReader
-import java.net.URL
 import java.util.*
 
 
@@ -51,6 +48,7 @@ class MainActivity : AppCompatActivity() {
         Manifest.permission.ACCESS_FINE_LOCATION,
         Manifest.permission.ACCESS_COARSE_LOCATION
     )
+    val shortWeathers = ArrayList<ShortWeather>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,7 +62,7 @@ class MainActivity : AppCompatActivity() {
         Log.e("test1", "x = " + tmp!!.x + ", y = " + tmp!!.y)
         Log.e("test1", "x = " + tmp2!!.x + ", y = " + tmp2!!.y)
         Log.e("test1", "x = " + tmp3!!.x + ", y = " + tmp3!!.y)
-        getData(this)
+        getData()
         Stetho.initializeWithDefaults(this)
         if (!checkLocationServicesStatus()) {
             showDialogForLocationServiceSetting()
@@ -97,34 +95,44 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    fun getData(activity: Activity) {
+    fun getData() {
         val client = OkHttpClient.Builder()
             .addNetworkInterceptor(StethoInterceptor())
             .build()
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://www.kma.go.kr/")
+            .baseUrl("http://www.kma.go.kr/wid/queryDFSRSS.jsp?zone=1159068000")
             .addConverterFactory(SimpleXmlConverterFactory.create())
             .client(client)
             .build()
         val service = retrofit.create(RetrofitService::class.java)
-
-        service.getWeatherData().enqueue(object : Callback<weatherData> {
-            override fun onFailure(call: Call<weatherData>, t: Throwable) {
-                Log.d("test1", t.toString())
-                Toast.makeText(activity, "통신 실패", Toast.LENGTH_LONG).show()
-            }
-
-            override fun onResponse(
-                call: Call<weatherData>,
-                response: Response<weatherData>
-            ) {
-                Log.d("test1", "응답 성공")
-                if (response.isSuccessful) {
-                    Log.d("test1", "응답 성공")
+        val rssService: Call<List<ShortWeather>> = service.getWeatherData()
+        rssService.enqueue(object : Callback<List<ShortWeather>> {
+            override fun onFailure(call: Call<List<ShortWeather>>, t: Throwable) {
+                if (call.isCanceled()) {
+                    println("Call was cancelled forcefully")
+                } else {
+                    println("Network Error :: " + t.localizedMessage)
                 }
             }
 
+            override fun onResponse(call: Call<List<ShortWeather>>, response: Response<List<ShortWeather>>) {
+                if (response.isSuccessful()) {
+                    val apiResponse = response.body()
+                    // API response
+                    val adapter = shortAdapter(
+                        apiResponse!!,
+                       LayoutInflater.from(this@MainActivity)
+                    )
+                    shortWeahter_recyclerview.adapter = adapter
+                    shortWeahter_recyclerview.layoutManager = LinearLayoutManager(this@MainActivity, LinearLayoutManager.HORIZONTAL, false)
+
+                } else {
+                    println("Request Error :: " + response.errorBody())
+                }
+            }
         })
+
+
     }
 
 
@@ -288,7 +296,11 @@ class MainActivity : AppCompatActivity() {
             ) {
 
                 // 3-2. 요청을 진행하기 전에 사용자가에게 퍼미션이 필요한 이유를 설명해줄 필요가 있습니다.
-                Toast.makeText(this@MainActivity, "이 앱을 실행하려면 위치 접근 권한이 필요합니다.", Toast.LENGTH_LONG)
+                Toast.makeText(
+                    this@MainActivity,
+                    "이 앱을 실행하려면 위치 접근 권한이 필요합니다.",
+                    Toast.LENGTH_LONG
+                )
                     .show()
                 // 3-3. 사용자게에 퍼미션 요청을 합니다. 요청 결과는 onRequestPermissionResult에서 수신됩니다.
                 ActivityCompat.requestPermissions(
@@ -386,211 +398,220 @@ class MainActivity : AppCompatActivity() {
 
 }
 
-class MyAdapter(private val myDataset: Array<String>) :
-    RecyclerView.Adapter<MyAdapter.MyViewHolder>() {
+class shortAdapter(
+    var postList: List<ShortWeather>,
+    val inflater: LayoutInflater
+) : RecyclerView.Adapter<shortAdapter.viewHolder>() {
+    inner class viewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val time: TextView
+        val rainper: TextView
+        val temp: TextView
 
-    class MyViewHolder(val textView: TextView) : RecyclerView.ViewHolder(textView)
-
-    override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int
-    ): MyAdapter.MyViewHolder {
-        val textView = LayoutInflater.from(parent.context)
-            .inflate(R.layout.timeitemview, parent, false) as TextView
-        return MyViewHolder(textView)
-    }
-
-    // Replace the contents of a view (invoked by the layout manager)
-    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        // - get element from your dataset at this position
-        // - replace the contents of the view with that element
-        holder.textView.text = myDataset[position]
-    }
-
-    // Return the size of your dataset (invoked by the layout manager)
-    override fun getItemCount() = myDataset.size
-}
-
-class ReceiveShortWeather : AsyncTask<URL, Integer, Long> {
-
-    val shortWeathers = ArrayList<ShortWeather>()
-
-    fun doInBackground(vararg urls: URL?): Long? {
-        val url = "http://www.kma.go.kr/wid/queryDFSRSS.jsp?zone=1159068000"
-        val client = OkHttpClient()
-        val request: Request = Request.Builder()
-            .url(url)
-            .build()
-        var response: Response = null
-        try {
-            response = client.newCall(request).execute()
-            parseXML(response.body().string())
-        } catch (e: Exception) {
-            e.printStackTrace()
+        init {
+            time = itemView.findViewById(R.id.timeitem_item)
+            rainper = itemView.findViewById(R.id.timeitem_rainper)
+            temp = itemView.findViewById(R.id.timeitem_temp)
         }
-        return null
     }
 
 
-    fun parseXML(xml: String?) {
-        try {
-            var tagName = ""
-            var onHour = false
-            var onDay = false
-            var onTem = false
-            var onWfKor = false
-            var onPop = false
-            var onEnd = false
-            var isItemTag1 = false
-            var i = 0
-            val factory =
-                XmlPullParserFactory.newInstance()
-            val parser = factory.newPullParser()
-            parser.setInput(StringReader(xml))
-            var eventType = parser.eventType
-            while (eventType != XmlPullParser.END_DOCUMENT) {
-                if (eventType == XmlPullParser.START_TAG) {
-                    tagName = parser.name
-                    if (tagName == "data") {
-                        shortWeathers.add(ShortWeather())
-                        onEnd = false
-                        isItemTag1 = true
-                    }
-                } else if (eventType == XmlPullParser.TEXT && isItemTag1) {
-                    if (tagName == "hour" && !onHour) {
-                        shortWeathers[i].hour = (parser.text)
-                        onHour = true
-                    }
-                    if (tagName == "day" && !onDay) {
-                        shortWeathers[i].day = (parser.text)
-                        onDay = true
-                    }
-                    if (tagName == "temp" && !onTem) {
-                        shortWeathers[i].temp = (parser.text)
-                        onTem = true
-                    }
-                    if (tagName == "wfKor" && !onWfKor) {
-                        shortWeathers[i].wfKor = (parser.text)
-                        onWfKor = true
-                    }
-                    if (tagName == "pop" && !onPop) {
-                        shortWeathers[i].pop = (parser.text)
-                        onPop = true
-                    }
-                } else if (eventType == XmlPullParser.END_TAG) {
-                    if (tagName == "s06" && onEnd == false) {
-                        i++
-                        onHour = false
-                        onDay = false
-                        onTem = false
-                        onWfKor = false
-                        onPop = false
-                        isItemTag1 = false
-                        onEnd = true
-                    }
-                }
-                eventType = parser.next()
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): viewHolder {
+        val view = inflater.inflate(R.layout.timeitemview, parent, false)
+        return viewHolder(view)
+    }
+
+    override fun getItemCount(): Int {
+        return postList.size
+    }
+
+    override fun onBindViewHolder(holder: viewHolder, position: Int) {
+        holder.time.setText(postList.get(position).hour)
+        holder.rainper.setText(postList.get(position).pop)
+        holder.temp.setText(postList.get(position).temp)
     }
 }
 
-class LongWeatherActivity : AppCompatActivity() {
-    var textView_longWeather: TextView? = null
-    ReceiveLongWeather().execute()
-
-
-    inner class ReceiveLongWeather : AsyncTask<URL?, Int?, Long?>() {
-        var longWeathers = ArrayList<LongWeather>()
-        protected override fun doInBackground(vararg urls: URL): Long? {
-            val url =
-                "http://www.kma.go.kr/weather/forecast/mid-term-rss3.jsp?stnId=109"
-            val client = OkHttpClient()
-            val request: Request = Request.Builder()
-                .url(url)
-                .build()
-            var response: Response? = null
-            try {
-                response = client.newCall(request).execute()
-                parseWeekXML(response.body().string())
-            } catch (e: java.lang.Exception) {
-                e.printStackTrace()
-            }
-            return null
-        }
-
-
-        fun parseWeekXML(xml: String?) {
-            try {
-                var tagName = ""
-                var onCity = false
-                var onTmEf = false
-                var onWf = false
-                var onTmn = false
-                var onTmx = false
-                var onEnd = false
-                var isItemTag1 = false
-                var i = 0
-                val factory =
-                    XmlPullParserFactory.newInstance()
-                val parser = factory.newPullParser()
-                parser.setInput(StringReader(xml))
-                var eventType = parser.eventType
-                while (eventType != XmlPullParser.END_DOCUMENT) {
-                    if (eventType == XmlPullParser.START_TAG) {
-                        tagName = parser.name
-                        if (tagName == "city") {
-                            eventType = parser.next()
-                            onCity = if (parser.text == "서울") {    // 파싱하고 싶은 지역 이름을 쓴다
-                                true
-                            } else {
-                                if (onCity) { // 이미 parsing을 끝냈을 경우
-                                    break
-                                } else {        // 아직 parsing을 못했을 경우
-                                    false
-                                }
-                            }
-                        }
-                        if (tagName == "data" && onCity) {
-                            longWeathers.add(LongWeather())
-                            onEnd = false
-                            isItemTag1 = true
-                        }
-                    } else if (eventType == XmlPullParser.TEXT && isItemTag1 && onCity) {
-                        if (tagName == "tmEf" && !onTmEf) {
-                            longWeathers[i].tmEf = (parser.text)
-                            onTmEf = true
-                        }
-                        if (tagName == "wf" && !onWf) {
-                            longWeathers[i].wf = (parser.text)
-                            onWf = true
-                        }
-                        if (tagName == "tmn" && !onTmn) {
-                            longWeathers[i].tmn = (parser.text)
-                            onTmn = true
-                        }
-                        if (tagName == "tmx" && !onTmx) {
-                            longWeathers[i].tmx = (parser.text)
-                            onTmx = true
-                        }
-                    } else if (eventType == XmlPullParser.END_TAG) {
-                        if (tagName == "reliability" && onEnd == false) {
-                            i++
-                            onTmEf = false
-                            onWf = false
-                            onTmn = false
-                            onTmx = false
-                            isItemTag1 = false
-                            onEnd = true
-                        }
-                    }
-                    eventType = parser.next()
-                }
-            } catch (e: java.lang.Exception) {
-                e.printStackTrace()
-            }
-        }
-    }
-}
+//
+//class ReceiveShortWeather : AsyncTask<URL, Integer, Long> {
+//
+//    val shortWeathers = ArrayList<ShortWeather>()
+//
+//    fun doInBackground(vararg urls: URL?): Long? {
+//        val url = "http://www.kma.go.kr/wid/queryDFSRSS.jsp?zone=1159068000"
+//        val client = OkHttpClient()
+//        val request: Request = Request.Builder()
+//            .url(url)
+//            .build()
+//        var response: Response? = null
+//        try {
+//            response = client.newCall(request).execute()
+//            parseXML(response.body().string())
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//        }
+//        return null
+//    }
+//
+//
+//    fun parseXML(xml: String?) {
+//        try {
+//            var tagName = ""
+//            var onHour = false
+//            var onDay = false
+//            var onTem = false
+//            var onWfKor = false
+//            var onPop = false
+//            var onEnd = false
+//            var isItemTag1 = false
+//            var i = 0
+//            val factory =
+//                XmlPullParserFactory.newInstance()
+//            val parser = factory.newPullParser()
+//            parser.setInput(StringReader(xml))
+//            var eventType = parser.eventType
+//            while (eventType != XmlPullParser.END_DOCUMENT) {
+//                if (eventType == XmlPullParser.START_TAG) {
+//                    tagName = parser.name
+//                    if (tagName == "data") {
+//                        shortWeathers.add(ShortWeather())
+//                        onEnd = false
+//                        isItemTag1 = true
+//                    }
+//                } else if (eventType == XmlPullParser.TEXT && isItemTag1) {
+//                    if (tagName == "hour" && !onHour) {
+//                        shortWeathers[i].hour = (parser.text)
+//                        onHour = true
+//                    }
+//                    if (tagName == "day" && !onDay) {
+//                        shortWeathers[i].day = (parser.text)
+//                        onDay = true
+//                    }
+//                    if (tagName == "temp" && !onTem) {
+//                        shortWeathers[i].temp = (parser.text)
+//                        onTem = true
+//                    }
+//                    if (tagName == "wfKor" && !onWfKor) {
+//                        shortWeathers[i].wfKor = (parser.text)
+//                        onWfKor = true
+//                    }
+//                    if (tagName == "pop" && !onPop) {
+//                        shortWeathers[i].pop = (parser.text)
+//                        onPop = true
+//                    }
+//                } else if (eventType == XmlPullParser.END_TAG) {
+//                    if (tagName == "s06" && onEnd == false) {
+//                        i++
+//                        onHour = false
+//                        onDay = false
+//                        onTem = false
+//                        onWfKor = false
+//                        onPop = false
+//                        isItemTag1 = false
+//                        onEnd = true
+//                    }
+//                }
+//                eventType = parser.next()
+//            }
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//        }
+//    }
+//}
+//
+//class LongWeatherActivity : AppCompatActivity() {
+//    var textView_longWeather: TextView? = null
+//    ReceiveLongWeather().execute()
+//
+//
+//    inner class ReceiveLongWeather : AsyncTask<URL?, Int?, Long?>() {
+//        var longWeathers = ArrayList<LongWeather>()
+//        protected override fun doInBackground(vararg urls: URL): Long? {
+//            val url =
+//                "http://www.kma.go.kr/weather/forecast/mid-term-rss3.jsp?stnId=109"
+//            val client = OkHttpClient()
+//            val request: Request = Request.Builder()
+//                .url(url)
+//                .build()
+//            var response: Response? = null
+//            try {
+//                response = client.newCall(request).execute()
+//                parseWeekXML(response.body().string())
+//            } catch (e: java.lang.Exception) {
+//                e.printStackTrace()
+//            }
+//            return null
+//        }
+//
+//
+//        fun parseWeekXML(xml: String?) {
+//            try {
+//                var tagName = ""
+//                var onCity = false
+//                var onTmEf = false
+//                var onWf = false
+//                var onTmn = false
+//                var onTmx = false
+//                var onEnd = false
+//                var isItemTag1 = false
+//                var i = 0
+//                val factory =
+//                    XmlPullParserFactory.newInstance()
+//                val parser = factory.newPullParser()
+//                parser.setInput(StringReader(xml))
+//                var eventType = parser.eventType
+//                while (eventType != XmlPullParser.END_DOCUMENT) {
+//                    if (eventType == XmlPullParser.START_TAG) {
+//                        tagName = parser.name
+//                        if (tagName == "city") {
+//                            eventType = parser.next()
+//                            onCity = if (parser.text == "서울") {    // 파싱하고 싶은 지역 이름을 쓴다
+//                                true
+//                            } else {
+//                                if (onCity) { // 이미 parsing을 끝냈을 경우
+//                                    break
+//                                } else {        // 아직 parsing을 못했을 경우
+//                                    false
+//                                }
+//                            }
+//                        }
+//                        if (tagName == "data" && onCity) {
+//                            longWeathers.add(LongWeather())
+//                            onEnd = false
+//                            isItemTag1 = true
+//                        }
+//                    } else if (eventType == XmlPullParser.TEXT && isItemTag1 && onCity) {
+//                        if (tagName == "tmEf" && !onTmEf) {
+//                            longWeathers[i].tmEf = (parser.text)
+//                            onTmEf = true
+//                        }
+//                        if (tagName == "wf" && !onWf) {
+//                            longWeathers[i].wf = (parser.text)
+//                            onWf = true
+//                        }
+//                        if (tagName == "tmn" && !onTmn) {
+//                            longWeathers[i].tmn = (parser.text)
+//                            onTmn = true
+//                        }
+//                        if (tagName == "tmx" && !onTmx) {
+//                            longWeathers[i].tmx = (parser.text)
+//                            onTmx = true
+//                        }
+//                    } else if (eventType == XmlPullParser.END_TAG) {
+//                        if (tagName == "reliability" && onEnd == false) {
+//                            i++
+//                            onTmEf = false
+//                            onWf = false
+//                            onTmn = false
+//                            onTmx = false
+//                            isItemTag1 = false
+//                            onEnd = true
+//                        }
+//                    }
+//                    eventType = parser.next()
+//                }
+//            } catch (e: java.lang.Exception) {
+//                e.printStackTrace()
+//            }
+//        }
+//    }
+//}

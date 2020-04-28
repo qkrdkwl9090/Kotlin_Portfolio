@@ -1,5 +1,7 @@
 package com.dodong.todayweather
 
+import java.io.Serializable
+
 class ShortWeather {
     var hour: String? = null
     var day: String? = null

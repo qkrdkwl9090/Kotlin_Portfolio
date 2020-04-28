@@ -135,6 +135,7 @@ class PostAdatper(
                 holder.remain.setTextColor(Color.YELLOW)
                 return "30개 이상 100개 미만"
             }
+
             else if (stat == "few"){
                 holder.remain.setTextColor(Color.RED)
                 return "2개 이상 30개 미만"
