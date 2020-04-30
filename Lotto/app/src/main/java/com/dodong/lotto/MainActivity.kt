@@ -31,9 +31,7 @@ class MainActivity : AppCompatActivity() {
         createRetrofit(this@MainActivity)
         Stetho.initializeWithDefaults(this)
 
-        retrofit.setOnClickListener {
-            createRetrofit(this@MainActivity)
-        }
+
     }
     fun createRetrofit(activity: Activity) {
         val client = OkHttpClient.Builder()
