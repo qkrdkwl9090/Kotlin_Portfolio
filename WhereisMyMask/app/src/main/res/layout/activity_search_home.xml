@@ -4,44 +4,82 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
     android:orientation="vertical"
     tools:context=".SearchHome">
-    <ImageView
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_marginBottom="50dp"
-        android:src="@drawable/cough"/>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
+    <com.google.android.gms.ads.AdView
+        xmlns:ads="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/adView"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|center_horizontal"
-        android:gravity="center_vertical"
+        ads:adSize="SMART_BANNER"
 
-        android:background="@drawable/border_layout"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp">
+        ads:adUnitId="ca-app-pub-8720679290306543/1227555958">
 
-        <EditText
-            android:id="@+id/addresssearch"
-            android:layout_width="300dp"
+    </com.google.android.gms.ads.AdView>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/placeSearch"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="8dp"
-            android:hint="(ex) 인천광역시 남동구 논현동 "
-            android:textAlignment="center"
-            android:textSize="15dp"
-            android:textStyle="bold" />
+            android:layout_marginBottom="30dp"
+            android:orientation="horizontal">
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/ic_place_black_24dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="내 위치로 검색"
+                android:textColor="#417BDC"
+                android:textSize="30dp"
+                android:layout_gravity="center"/>"
+        </LinearLayout>
 
-        <ImageView
-            android:id="@+id/search"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/search"/>
+        <LinearLayout
 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:background="@drawable/border_layout"
+
+            android:gravity="center_vertical"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp">
+
+            <EditText
+                android:id="@+id/addresssearch"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="8dp"
+                android:hint="(ex) 인천광역시 남동구 논현동 "
+                android:textAlignment="center"
+                android:textSize="15dp"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/search"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/search" />
+
+
+        </LinearLayout>
+        <TextView
+            android:layout_marginTop="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="시 구 동까지 모두 입력하셔야 검색됩니다.\n주소명이 변경되었으면 내 위치로 \n검색이 불가능합니다. 검색으로 부탁드립니다. "/>
 
     </LinearLayout>
+
 
 
 </LinearLayout>
