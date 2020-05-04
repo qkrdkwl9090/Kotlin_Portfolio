@@ -15,14 +15,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <!--            android:value="   ca-app-pub-3940256099942544~3347511713"-->
-
-        <meta-data
-            android:name="com.google.android.gms.ads.APPLICATION_ID"
-
-            android:value="ca-app-pub-8720679290306543~2349614673" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_maps_key" />
+            android:value="AIzaSyBIUe7TYYxlUF6bDmpd0cZCBvlZ3ZgwS6w" />
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-8720679290306543~2349614673" />
+
 
         <activity
             android:name=".MapsActivity"

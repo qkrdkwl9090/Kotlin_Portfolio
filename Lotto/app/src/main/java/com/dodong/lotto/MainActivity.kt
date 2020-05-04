@@ -114,7 +114,7 @@ class PostAdatper(
         holder.num3.setText(postList.drwtNo3.toString())
         holder.num4.setText(postList.drwtNo4.toString())
         holder.num5.setText(postList.drwtNo5.toString())
-        holder.num6.setText(postList.drwtNo6.toString())
+    holder.num6.setText(postList.drwtNo6.toString())
 
-    }
+}
 }

@@ -13,7 +13,6 @@
             android:textSize="20dp"
             android:text="1번 : "/>
         <TextView
-            android:id="@+id/num1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="20dp"
@@ -29,7 +28,6 @@
             android:textSize="20dp"
             android:text="2번 : "/>
         <TextView
-            android:id="@+id/num2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="20dp"
@@ -45,7 +43,6 @@
             android:textSize="20dp"
             android:text="3번 : "/>
         <TextView
-            android:id="@+id/num3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="20dp"
@@ -61,7 +58,6 @@
             android:textSize="20dp"
             android:text="4번 : "/>
         <TextView
-            android:id="@+id/num4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="20dp"
@@ -77,7 +73,6 @@
             android:textSize="20dp"
             android:text="5번 : "/>
         <TextView
-            android:id="@+id/num5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="20dp"
@@ -93,7 +88,6 @@
             android:textSize="20dp"
             android:text="6번 : "/>
         <TextView
-            android:id="@+id/num6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="20dp"
